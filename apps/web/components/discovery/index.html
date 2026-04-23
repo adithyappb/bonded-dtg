@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RelationHack — Home</title>
+
+<style>
+
+/* GLOBAL */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  height: 100vh;
+}
+
+/* NAV */
+
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: black;
+  padding: 12px;
+  text-align: center;
+}
+
+.nav a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav a:hover {
+  color: #00e676;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  margin-top: 50px;
+  background: #111;
+  padding: 15px;
+  border-right: 1px solid #333;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #00e676;
+}
+
+.preference-box {
+  background: black;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.preference-box label {
+  display: block;
+  margin-top: 10px;
+}
+
+input, select {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 4px;
+}
+
+/* PROFILE */
+
+.main {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-card {
+  width: 340px;
+  background: white;
+  color: black;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+
+  transition:
+    transform 0.4s ease,
+    opacity 0.4s ease;
+}
+
+.profile-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.profile-info {
+  padding: 14px;
+}
+
+.crypto-section {
+  background: #111;
+  color: #00e676;
+  padding: 8px;
+  border-radius: 10px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.reputation {
+  background: black;
+  color: #ff5252;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.badge {
+  display: inline-block;
+  background: gold;
+  color: black;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  margin-right: 4px;
+}
+
+/* BUTTONS */
+
+.action-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+}
+
+.action-buttons button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.reject {
+  background: #ff4d4d;
+  color: white;
+}
+
+.like {
+  background: #00c853;
+  color: white;
+}
+
+/* SWIPE ANIMATIONS */
+
+.swipe-right {
+  transform: translateX(500px) rotate(25deg);
+  opacity: 0;
+}
+
+.swipe-left {
+  transform: translateX(-500px) rotate(-25deg);
+  opacity: 0;
+}
+
+/* RIGHT PANEL */
+
+<div class="right-panel">
+
+<!-- WALLET -->
+
+<div class="wallet-box">
+
+<b>Wallet Connected</b><br>
+
+0xA81F...9B21<br>
+
+Balance: 1.42 ETH
+
+</div>
+
+<!-- STAKE SETUP -->
+
+<div class="stake-box">
+
+<b>Date Stake Setup</b>
+
+<label>Stake Amount</label>
+<input type="text" placeholder="0.02 ETH">
+
+<label>Date Type</label>
+<select>
+
+<option>Coffee</option>
+<option>Dinner</option>
+<option>Activity</option>
+
+</select>
+
+<label>Preferred Time</label>
+<input type="text" placeholder="Friday 6:00 PM">
+
+</div>
+
+<!-- MATCHING ENGINE RESULTS (THIS IS THE NEW PART) -->
+
+<div class="match-results">
+
+<b>Top Matches</b>
+
+<div id="match-list">
+
+<!-- Matches appear here -->
+
+</div>
+
+<button onclick="runMatching()">
+
+Find Matches
+
+</button>
+
+</div>
+
+</div>
+
+</style>
+.match-results {
+
+  background: black;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 12px;
+
+}
+
+.match-item {
+
+  background: #222;
+  padding: 8px;
+  border-radius: 8px;
+  margin-top: 6px;
+
+}
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+
+<div class="nav">
+
+<a href="index.html">Home</a>
+<a href="matchmaker.html">Matchmaker</a>
+<a href="messages.html">Messages</a>
+
+</div>
+
+<div class="container">
+
+<!-- LEFT: PREFERENCES -->
+
+<div class="sidebar">
+
+<div class="logo">
+RelationHack
+</div>
+
+<div class="preference-box">
+
+<b>Your Preferences</b>
+
+<label>Age Range</label>
+<input type="text" placeholder="22 - 30">
+
+<label>Distance</label>
+<select>
+<option>5 miles</option>
+<option>10 miles</option>
+<option>25 miles</option>
+</select>
+
+<label>Interests</label>
+<input type="text" placeholder="Travel, Fitness, Tech">
+
+<label>Dealbreakers</label>
+<input type="text" placeholder="Smoking, etc">
+
+</div>
+
+</div>
+
+<!-- CENTER: PROFILE -->
+
+<div class="main">
+
+<div class="profile-card" id="card">
+
+<img id="profile-img"
+src="https://picsum.photos/id/1011/400/400">
+
+<div class="profile-info">
+
+<h2 id="profile-name">
+Alex, 26
+</h2>
+
+<p id="profile-bio">
+Loves hiking and sushi 🍣
+</p>
+
+<div class="crypto-section">
+Suggested Date Stake: 0.02 ETH
+</div>
+
+<div class="reputation">
+Ghost Score: 2% (High Reliability)
+</div>
+
+<span class="badge">
+First Date NFT
+</span>
+
+<span class="badge">
+5 Successful Dates
+</span>
+
+<div class="action-buttons">
+
+<button class="reject"
+onclick="swipeLeft()">
+✖
+</button>
+
+<button class="like"
+onclick="swipeRight()">
+❤
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- RIGHT: STAKE -->
+
+<div class="right-panel">
+
+<div class="wallet-box">
+
+<b>Wallet Connected</b><br>
+
+0xA81F...9B21<br>
+
+Balance: 1.42 ETH
+
+</div>
+
+<div class="stake-box">
+
+<b>Date Stake Setup</b>
+
+<label>Stake Amount</label>
+<input type="text"
+placeholder="0.02 ETH">
+
+<label>Date Type</label>
+<select>
+
+<option>Coffee</option>
+<option>Dinner</option>
+<option>Activity</option>
+
+</select>
+
+<label>Preferred Time</label>
+<input type="text"
+placeholder="Friday 6:00 PM">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+/* FAKE PROFILE DATA */
+
+const profiles = [
+
+{
+name: "Alex, 26",
+bio: "Loves hiking and sushi 🍣",
+img: "https://picsum.photos/id/1011/400/400"
+},
+
+{
+name: "Jordan, 27",
+bio: "Designer & traveler ✈️",
+img: "https://picsum.photos/id/1005/400/400"
+},
+
+{
+name: "Taylor, 25",
+bio: "Gym lover & foodie 💪",
+img: "https://picsum.photos/id/1027/400/400"
+}
+
+];
+
+let currentProfile = 0;
+
+const card = document.getElementById("card");
+
+/* SWIPE RIGHT */
+
+function swipeRight() {
+
+card.classList.add("swipe-right");
+
+console.log("Liked ❤️");
+
+nextProfile();
+
+}
+
+/* SWIPE LEFT */
+
+function swipeLeft() {
+
+card.classList.add("swipe-left");
+
+console.log("Rejected ❌");
+
+nextProfile();
+
+}
+
+/* LOAD NEXT PROFILE */
+
+function nextProfile() {
+
+setTimeout(() => {
+
+currentProfile++;
+
+if (currentProfile >= profiles.length) {
+
+currentProfile = 0;
+
+}
+
+const profile = profiles[currentProfile];
+
+document.getElementById("profile-img").src =
+profile.img;
+
+document.getElementById("profile-name").textContent =
+profile.name;
+
+document.getElementById("profile-bio").textContent =
+profile.bio;
+
+card.classList.remove(
+"swipe-left",
+"swipe-right"
+);
+
+}, 400);
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+import type { AchievementDefinition } from "./types";
+
+/**
+ * Full catalog: success path + honest caution NFTs.
+ * Caution badges are “proof of state” but copy always points forward.
+ */
+export const ACHIEVEMENT_CATALOG: readonly AchievementDefinition[] = [
+  {
+    id: "first_staked_date",
+    title: "First Staked Date",
+    shortDesc: "Completed a date with escrow released fairly.",
+    emoji: "🎉",
+    tone: "celebrate",
+    nudge: "",
+    requirement: "Complete 1 staked date with mutual or fair resolution.",
+  },
+  {
+    id: "reliable_chain_5",
+    title: "5 Reliable",
+    shortDesc: "Five staked dates in a row without flaking.",
+    emoji: "⭐",
+    tone: "milestone",
+    nudge: "",
+    requirement: "5 consecutive completed staked dates (no flake/forfeit).",
+  },
+  {
+    id: "reliable_chain_10",
+    title: "10 Reliable",
+    shortDesc: "Ten consecutive wins — people can count on you.",
+    emoji: "🏅",
+    tone: "milestone",
+    nudge: "",
+    requirement: "10 consecutive completed staked dates.",
+  },
+  {
+    id: "mutual_meet_bond",
+    title: "Mutual Meet",
+    shortDesc: "You and a match both confirmed you met in person.",
+    emoji: "🤝",
+    tone: "milestone",
+    nudge: "",
+    requirement: "At least one mutual “we met” attestation.",
+  },
+  {
+    id: "stake_volume_diamond",
+    title: "Diamond Hands",
+    shortDesc: "High total commitment volume in date stakes.",
+    emoji: "💎",
+    tone: "milestone",
+    nudge: "",
+    requirement: "Stake $1,000+ USDC cumulative in date escrows.",
+  },
+  {
+    id: "trust_anchor",
+    title: "Trust Anchor",
+    shortDesc: "Composite trust score reached the Solid band.",
+    emoji: "⚓",
+    tone: "milestone",
+    nudge: "",
+    requirement: "Reach Solid trust (80+) with verification signals.",
+  },
+  {
+    id: "matchmaker_cupid",
+    title: "Cupid’s Ledger",
+    shortDesc: "You introduced two people whose preferences lined up.",
+    emoji: "💘",
+    tone: "milestone",
+    nudge: "",
+    requirement: "Record at least one mutual-preference introduction as matchmaker.",
+  },
+  {
+    id: "caution_reliability_dip",
+    title: "Rough Patch",
+    shortDesc: "Ghost Score crossed a risk band — minted to keep you honest.",
+    emoji: "🌧️",
+    tone: "caution",
+    nudge: "Show up to your next staked date and use QR check-in — your line trends back down fast.",
+    requirement: "Ghost Score ≥ 40 (visibility only; reversible with good behavior).",
+  },
+  {
+    id: "caution_forfeit",
+    title: "Missed Step",
+    shortDesc: "A stake didn’t complete in your favor.",
+    emoji: "🪜",
+    tone: "caution",
+    nudge: "Re-lock a small stake for your next plan — consistency rewires how people see you.",
+    requirement: "At least one forfeited or lost stake recorded.",
+  },
+  {
+    id: "caution_dispute",
+    title: "Clarity Check",
+    shortDesc: "A date had a disputed outcome.",
+    emoji: "⚖️",
+    tone: "caution",
+    nudge: "Prefer venue QR + chat receipts next time — disputes drop when evidence is mutual.",
+    requirement: "At least one disputed resolution.",
+  },
+];

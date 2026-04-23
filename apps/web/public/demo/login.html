@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Bonded — Crypto-Native Dating</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="Stake your integrity. Find your match. Powered by Bitcoin.">
+</head>
+<body>
+  <div class="app-container">
+    <div class="content">
+      <div class="auth-container">
+
+        <div class="auth-logo">Bonded</div>
+        <p class="auth-tagline">Stake your integrity. Find your match.</p>
+
+        <div class="auth-badge">
+          <span class="auth-badge-dot"></span>
+          Bitcoin-Native · Ghost Score · Smart Stake Contracts
+        </div>
+
+        <form id="login-form" onsubmit="handleLogin(event)" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="username">Username / ENS Address</label>
+            <input
+              id="username"
+              type="text"
+              class="form-control"
+              placeholder="demo@bonded.app"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+            >
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="password">Password / Wallet Signature</label>
+            <input
+              id="password"
+              type="password"
+              class="form-control"
+              placeholder="••••••••••••"
+              autocomplete="current-password"
+            >
+          </div>
+          <button type="submit" class="btn-primary" id="login-btn">Connect Wallet & Sign In</button>
+          <p class="error-msg" id="error-msg">⚠ Invalid credentials. Try the demo account below.</p>
+        </form>
+
+        <div class="auth-demo-hint">
+          <strong>Demo Evaluator Access</strong><br>
+          Username: <code>demo@bonded.app</code><br>
+          Password: <code>Hackathon2026!</code>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="logger.js"></script>
+  <script src="appState.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value;
+      const btn  = document.getElementById('login-btn');
+      const err  = document.getElementById('error-msg');
+
+      btn.textContent = 'Verifying on-chain…';
+      btn.disabled = true;
+      err.style.display = 'none';
+
+      setTimeout(() => {
+        const ok = Auth.login(user, pass);
+        if (!ok) {
+          err.style.display = 'block';
+          btn.textContent = 'Connect Wallet & Sign In';
+          btn.disabled = false;
+        }
+      }, 800);
+    }
+
+    // Auto-fill form on Enter
+    document.getElementById('username').addEventListener('keypress', e => {
+      if (e.key === 'Enter') document.getElementById('password').focus();
+    });
+  </script>
+</body>
+</html>

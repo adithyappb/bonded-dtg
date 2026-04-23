@@ -1,0 +1,2 @@
+# Remappings placeholder: list Solidity dependency import aliases here when OpenZeppelin, testing libraries, or chain-specific helpers are added.
+

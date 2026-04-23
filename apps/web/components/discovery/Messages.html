@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RelationHack — Messages</title>
+
+<style>
+
+/* GLOBAL */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  height: 100vh;
+}
+
+/* NAV */
+
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: black;
+  padding: 12px;
+  text-align: center;
+}
+
+.nav a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.nav a:hover {
+  color: #00e676;
+}
+
+/* LEFT SIDEBAR */
+
+.sidebar {
+  margin-top: 50px;
+  background: #111;
+  padding: 15px;
+  border-right: 1px solid #333;
+}
+
+.sidebar h3 {
+  margin-bottom: 10px;
+}
+
+.conversation {
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.conversation:hover {
+  background: #333;
+}
+
+/* CHAT AREA */
+
+.chat-area {
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 12px;
+  background: black;
+  border-bottom: 1px solid #333;
+  font-weight: bold;
+}
+
+.chat-window {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MESSAGE STYLES */
+
+.message {
+  padding: 10px 12px;
+  border-radius: 14px;
+  margin-top: 8px;
+  max-width: 75%;
+  font-size: 13px;
+}
+
+.message-left {
+  background: #333;
+  margin-right: auto;
+}
+
+.message-right {
+  background: #00c853;
+  margin-left: auto;
+}
+
+/* INPUT */
+
+.chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid #333;
+  background: black;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+.send-btn {
+  background: #2962ff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+/* RIGHT PANEL */
+
+.right-panel {
+  margin-top: 50px;
+  background: #111;
+  padding: 15px;
+  border-left: 1px solid #333;
+}
+
+.tool-box {
+  background: black;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- NAV -->
+
+<div class="nav">
+
+<a href="index.html">Home</a>
+<a href="matchmaker.html">Matchmaker</a>
+<a href="messages.html">Messages</a>
+
+</div>
+
+<div class="container">
+
+<!-- LEFT CONVERSATIONS -->
+
+<div class="sidebar">
+
+<h3>Messages</h3>
+
+<div class="conversation"
+onclick="loadConversation('ghosted')">
+Jordan 👻
+</div>
+
+<div class="conversation"
+onclick="loadConversation('planned')">
+Taylor 📅
+</div>
+
+<div class="conversation"
+onclick="loadConversation('normal1')">
+Alex 💬
+</div>
+
+<div class="conversation"
+onclick="loadConversation('normal2')">
+Casey 💬
+</div>
+
+</div>
+
+<!-- CENTER CHAT -->
+
+<div class="chat-area">
+
+<div class="chat-header"
+id="chat-name">
+
+Jordan
+
+</div>
+
+<div class="chat-window"
+id="chat-window">
+
+</div>
+
+<div class="chat-input">
+
+<input
+type="text"
+placeholder="Type a message...">
+
+<button class="send-btn">
+Send
+</button>
+
+</div>
+
+</div>
+
+<!-- RIGHT PANEL -->
+
+<div class="right-panel">
+
+<div class="tool-box">
+
+<b>Conversation Status</b>
+
+<div id="status-box">
+
+Ghost Score Risk: HIGH
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+/* CONVERSATION DATA */
+
+const conversations = {
+
+ghosted: {
+
+name: "Jordan",
+
+status: "⚠️ High Ghost Risk (Ghost Score: 42%)",
+
+messages: [
+
+{ side: "left",
+text: "Hey — sorry I've been busy" },
+
+{ side: "right",
+text: "No worries, still want to meet?" },
+
+{ side: "left",
+text: "Yeah maybe, I'll let you know" },
+
+{ side: "right",
+text: "We had a date planned?" },
+
+{ side: "left",
+text: "..." }
+
+]
+
+},
+
+planned: {
+
+name: "Taylor",
+
+status: "📅 Date Scheduled — Stake Locked",
+
+messages: [
+
+{ side: "left",
+text: "Are you free Friday?" },
+
+{ side: "right",
+text: "Yes — let's do coffee ☕" },
+
+{ side: "left",
+text: "6pm at Cafe Nero?" },
+
+{ side: "right",
+text: "Perfect — locking stake now" },
+
+{ side: "left",
+text: "Looking forward to it!" }
+
+]
+
+},
+
+normal1: {
+
+name: "Alex",
+
+status: "💬 Active Conversation",
+
+messages: [
+
+{ side: "left",
+text: "What kind of music do you like?" },
+
+{ side: "right",
+text: "Mostly indie and house" },
+
+{ side: "left",
+text: "Nice — same here!" }
+
+]
+
+},
+
+normal2: {
+
+name: "Casey",
+
+status: "💬 Active Conversation",
+
+messages: [
+
+{ side: "left",
+text: "Have you tried the new sushi place?" },
+
+{ side: "right",
+text: "Not yet — is it good?" },
+
+{ side: "left",
+text: "Yeah it's amazing" }
+
+]
+
+}
+
+};
+
+/* LOAD CONVERSATION */
+
+function loadConversation(type) {
+
+const convo = conversations[type];
+
+document.getElementById("chat-name")
+.textContent = convo.name;
+
+document.getElementById("status-box")
+.textContent = convo.status;
+
+const chatWindow =
+document.getElementById("chat-window");
+
+chatWindow.innerHTML = "";
+
+convo.messages.forEach(msg => {
+
+const messageDiv =
+document.createElement("div");
+
+messageDiv.classList.add("message");
+
+if (msg.side === "left") {
+
+messageDiv.classList.add("message-left");
+
+}
+
+else {
+
+messageDiv.classList.add("message-right");
+
+}
+
+messageDiv.textContent = msg.text;
+
+chatWindow.appendChild(messageDiv);
+
+});
+
+}
+
+/* LOAD DEFAULT */
+
+loadConversation("ghosted");
+
+</script>
+
+</body>
+
+</html>

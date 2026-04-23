@@ -1,0 +1,17 @@
+export const routes = {
+  home: "/",
+  authEmail: "/auth/email",
+  discover: "/discover",
+  dashboard: "/dashboard",
+  messages: "/messages",
+  messagesThread: (threadId: string) => `/messages/${threadId}` as const,
+  profile: "/profile",
+  onboarding: "/onboarding",
+  wallet: "/wallet",
+  matches: "/matches",
+  matchReview: (profileId: string | number) => `/matches/review/${profileId}` as const,
+  matchmaker: "/matchmaker",
+  premium: "/premium",
+  dates: (dateId: string) => `/dates/${dateId}` as const,
+  reputation: (profileId: string) => `/reputation/${profileId}` as const,
+} as const;

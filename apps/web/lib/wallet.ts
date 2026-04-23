@@ -1,0 +1,16 @@
+export {
+  WalletProvider,
+  useWallet,
+  useWalletOptional,
+  createBrowserWalletAdapter,
+  createStubWalletAdapter,
+  initialWalletState,
+  BASE_CHAIN_ID,
+  chainName,
+  isBaseChain,
+  shortAddress,
+  type WalletAdapter,
+  type WalletIdentity,
+  type WalletState,
+  type WalletStatus,
+} from "./wallet/index";

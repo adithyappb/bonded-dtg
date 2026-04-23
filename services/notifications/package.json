@@ -1,0 +1,4 @@
+{
+  "_comment": "Notifications service manifest placeholder: later define queue, push provider, email/SMS provider, template rendering, and retry dependencies."
+}
+

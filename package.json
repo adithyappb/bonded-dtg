@@ -1,0 +1,21 @@
+{
+  "name": "bonded-project",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "node ./scripts/ensure-port-free.js && npm run dev:web",
+    "dev:web": "npm --prefix apps/web run dev",
+    "dev:api": "npm --prefix apps/api run dev",
+    "cogcoin": "node tools/cogcoin-mock.js",
+    "nunchuk": "node tools/nunchuk-mock.js",
+    "build:web": "npm --prefix apps/web run build",
+    "build:api": "npm --prefix apps/api run build",
+    "test:web": "npm --prefix apps/web run test",
+    "test:api": "npm --prefix apps/api run test",
+    "typecheck": "npm --prefix apps/web run typecheck && npm --prefix apps/api run typecheck"
+  }
+}

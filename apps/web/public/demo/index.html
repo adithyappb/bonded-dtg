@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Discover — Bonded</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="nav-logo">Bonded</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div class="ghost-badge" id="ghost-badge">👻 <span id="nav-ghost">5</span>%</div>
+        <div class="nav-wallet-pill" id="wallet-pill">
+          <span class="dot"></span>
+          <span id="nav-bal">0.00</span> ETH
+        </div>
+      </div>
+    </nav>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="deck-wrapper">
+
+        <div class="deck-info" id="deck-info">Loading matches…</div>
+
+        <div class="deck-container" id="deck">
+          <!-- Cards rendered here -->
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-action btn-reject" id="btn-reject" onclick="handleSwipe('left')" title="Pass" aria-label="Reject">✕</button>
+          <button class="btn-action btn-super"  id="btn-super"  onclick="handleSwipe('super')" title="Super Like" aria-label="Super Like">⭐</button>
+          <button class="btn-action btn-like"   id="btn-like"   onclick="handleSwipe('right')" title="Like" aria-label="Like">♥</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SVG Symbols -->
+    <svg style="display:none;">
+      <symbol id="icon-compass" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.63-13.37l-1.37 6 6-1.37 1.37-6-6 1.37z"/></symbol>
+      <symbol id="icon-msg"     viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></symbol>
+      <symbol id="icon-users"   viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 3a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></symbol>
+      <symbol id="icon-wallet"  viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM4 5h16a1 1 0 011 1H3a1 1 0 011-1zm13 9a1 1 0 110-2 1 1 0 010 2z"/></symbol>
+    </svg>
+
+    <nav class="bottom-tab-bar">
+      <a href="index.html"      class="tab active"><svg><use href="#icon-compass"></use></svg>Discover</a>
+      <a href="messages.html"   class="tab"><svg><use href="#icon-msg"></use></svg>Messages</a>
+      <a href="matchmaker.html" class="tab"><svg><use href="#icon-users"></use></svg>Matchmaker</a>
+      <a href="wallet.html"     class="tab"><svg><use href="#icon-wallet"></use></svg>Wallet</a>
+    </nav>
+  </div>
+
+  <script src="logger.js"></script>
+  <script src="appState.js"></script>
+  <script src="walletManager.js"></script>
+  <script src="ghostScoreEngine.js"></script>
+  <script src="stakeEngine.js"></script>
+  <script src="stakeManager.js"></script>
+  <script src="auth.js"></script>
+  <script src="users.js"></script>
+  <script src="matching.js"></script>
+  <script src="matchEngine.js"></script>
+  <script src="tests.js"></script>
+
+  <script>
+    // ── UI Layer only — all logic via managers ────────────────────
+    const deck = document.getElementById('deck');
+    let isDragging = false, startX = 0, startY = 0, currentX = 0;
+
+    // ── Build a card element ──────────────────────────────────────
+    function buildCard(match, isTop, zIndex) {
+      const p = match.profile;
+      const { label: ghostText, cls: ghostCls } = GhostScoreEngine.riskLabel(p.ghostScore);
+      const score = match.score;
+
+      const card = document.createElement('div');
+      card.className = 'profile-card';
+      card.dataset.id = p.id;
+      card.style.zIndex = zIndex;
+      if (!isTop) {
+        const behind = 3 - zIndex;
+        card.style.transform = `translateY(${behind * 12}px) scale(${1 - behind * 0.04})`;
+      }
+
+      card.innerHTML = `
+        <div class="card-overlay nope">NOPE</div>
+        <div class="card-overlay like">LIKE</div>
+        <img
+          src="${p.profileImage}"
+          alt="${p.displayName}"
+          onerror="this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop'"
+          loading="lazy"
+        >
+        <div class="profile-info">
+          <div class="profile-header">
+            <h2>${p.displayName}</h2>
+            <span class="profile-age">${p.age}</span>
+            <svg class="verified-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+          </div>
+
+          <p class="bio">"${p.bio}"</p>
+
+          <div class="crypto-panel">
+            <div class="crypto-stat">
+              <span class="crypto-stat-label">Ghost Score</span>
+              <span class="crypto-stat-value ${ghostCls}">${p.ghostScore}% · ${ghostText}</span>
+            </div>
+            <div class="crypto-stat">
+              <span class="crypto-stat-label">Wallet Balance</span>
+              <span class="crypto-stat-value text-green">${p.walletBalance} ETH</span>
+            </div>
+            <div class="crypto-stat">
+              <span class="crypto-stat-label">Match Score</span>
+              <span class="crypto-stat-value">${score}%</span>
+            </div>
+            <div class="crypto-stat">
+              <span class="crypto-stat-label">Shared Interests</span>
+              <span class="crypto-stat-value">${match.sharedInterestsCount} common</span>
+            </div>
+            <div class="match-score-bar" style="grid-column:1/-1">
+              <div class="match-score-fill" style="width:${score}%"></div>
+            </div>
+          </div>
+
+          <div class="tags">
+            ${p.interests.map(i => `<span class="tag">${i}</span>`).join('')}
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-3);margin-top:0.25rem;">${p.walletAddress}</div>
+        </div>
+      `;
+
+      // ── Touch / Drag events ─────────────────────────────────────
+      if (isTop) attachDragEvents(card);
+
+      return card;
+    }
+
+    function attachDragEvents(card) {
+      card.addEventListener('mousedown', onDragStart);
+      card.addEventListener('touchstart', onDragStart, { passive: true });
+    }
+
+    function onDragStart(e) {
+      if (e.target.closest('.profile-info')) return; // allow scroll inside info
+      isDragging = true;
+      startX = e.touches ? e.touches[0].clientX : e.clientX;
+      startY = e.touches ? e.touches[0].clientY : e.clientY;
+      currentX = 0;
+      document.addEventListener('mousemove', onDragMove);
+      document.addEventListener('touchmove', onDragMove, { passive: true });
+      document.addEventListener('mouseup', onDragEnd);
+      document.addEventListener('touchend', onDragEnd);
+    }
+
+    function onDragMove(e) {
+      if (!isDragging) return;
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - startY;
+      currentX = x;
+      const rotate = x * 0.07;
+      const topCard = document.querySelector('.profile-card:last-child');
+      if (!topCard) return;
+      topCard.style.transform = `translateX(${x}px) translateY(${y * 0.2}px) rotate(${rotate}deg)`;
+      topCard.style.transition = 'none';
+      topCard.classList.toggle('hinting-left',  x < -30);
+      topCard.classList.toggle('hinting-right', x > 30);
+    }
+
+    function onDragEnd() {
+      isDragging = false;
+      document.removeEventListener('mousemove', onDragMove);
+      document.removeEventListener('touchmove', onDragMove);
+      document.removeEventListener('mouseup', onDragEnd);
+      document.removeEventListener('touchend', onDragEnd);
+
+      const topCard = document.querySelector('.profile-card:last-child');
+      if (!topCard) return;
+      topCard.style.transition = '';
+
+      if (currentX > 80)       commitSwipe('right');
+      else if (currentX < -80) commitSwipe('left');
+      else {
+        topCard.style.transform = '';
+        topCard.classList.remove('hinting-left', 'hinting-right');
+      }
+    }
+
+    function commitSwipe(dir) {
+      const topCard = document.querySelector('.profile-card:last-child');
+      if (!topCard) return;
+      topCard.classList.add(dir === 'left' ? 'swipe-left' : 'swipe-right');
+      setTimeout(() => {
+        MatchEngine.swipe(dir);
+        renderDeck();
+      }, 380);
+    }
+
+    function handleSwipe(dir) {
+      if (MatchEngine.isExhausted()) return;
+      commitSwipe(dir);
+    }
+
+    function renderDeck() {
+      deck.innerHTML = '';
+      const queue = MatchEngine.getQueue();
+
+      updateDeckInfo(queue.length);
+
+      if (queue.length === 0) {
+        deck.innerHTML = `
+          <div style="text-align:center;padding:3rem 1.5rem;">
+            <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+            <h3 style="font-size:1.1rem;margin-bottom:0.5rem;">You've seen everyone!</h3>
+            <p style="color:var(--text-2);font-size:0.85rem;">Check back soon for new matches</p>
+          </div>`;
+        document.getElementById('btn-like').disabled   = true;
+        document.getElementById('btn-reject').disabled = true;
+        document.getElementById('btn-super').disabled  = true;
+        return;
+      }
+
+      document.getElementById('btn-like').disabled   = false;
+      document.getElementById('btn-reject').disabled = false;
+      document.getElementById('btn-super').disabled  = false;
+
+      // Render bottom 3 (back to front)
+      const visible = queue.slice(0, 3);
+      visible.slice().reverse().forEach((match, i) => {
+        const isTop = i === visible.length - 1;
+        const card  = buildCard(match, isTop, i + 1);
+        deck.appendChild(card);
+      });
+    }
+
+    function updateDeckInfo(remaining) {
+      const liked = MatchEngine.getLiked().length;
+      document.getElementById('deck-info').textContent =
+        remaining > 0 ? `${remaining} matches nearby · ${liked} liked` : '';
+    }
+
+    function updateNavStats() {
+      const bal   = WalletManager.currentBalance ?? 0;
+      const state = StateManager.readState();
+      const ghost = state.loggedInUser?.ghostScore ?? 5;
+      document.getElementById('nav-bal').textContent   = parseFloat(bal).toFixed(2);
+      document.getElementById('nav-ghost').textContent = ghost;
+    }
+
+    // Subscribe to state changes → update UI
+    StateManager.subscribe(state => {
+      updateNavStats();
+      const notifs = state.notifications ?? [];
+      if (notifs.length > 0) {
+        const n = notifs[notifs.length - 1];
+        showToast(n.text, n.type);
+      }
+    });
+
+    function showToast(text, type = 'info') {
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.className = `toast ${type}`;
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 3200);
+    }
+
+    // ── Boot ─────────────────────────────────────────────────────
+    WalletManager.connectWallet().then(() => {
+      MatchEngine.loadQueue();
+      renderDeck();
+      updateNavStats();
+    });
+  </script>
+</body>
+</html>

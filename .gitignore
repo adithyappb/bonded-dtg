@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build / caches
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+.eslintcache
+coverage/
+.vercel/
+
+# Env and secrets (never commit real values)
+.env
+.env.local
+.env.*.local
+*.pem
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test / Playwright
+playwright-report/
+test-results/
+blob-report/
+
+# Misc
+*.local
+.cache/
+
+# Legacy merged sources (keep out of this repo if copies sit beside the tree)
+crypto-dating/
+bonded2/

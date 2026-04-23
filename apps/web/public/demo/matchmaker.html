@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matchmaker - Bonded Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <nav class="navbar">
+      <div class="nav-logo">Bonded Pro</div>
+    </nav>
+
+    <div class="content matchmaker-view" id="content-area">
+      <h2 class="mm-title">Your Network Matches</h2>
+      <p style="color:#94a3b8; font-size:0.85rem; margin-top:-0.5rem; margin-bottom:1.5rem;">Propose matches between people in your extended network and earn a Matchmaker Fee.</p>
+
+      <div id="mm-feed"></div>
+
+      <div class="crypto-stats" style="margin-top:2rem;">
+        <div class="stat-row">
+          <span class="stat-label">Matchmaker Rewards Earned:</span>
+          <span class="stat-value">1.45 ETH</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Successful Matches:</span>
+          <span class="stat-value text-white">12</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG Definitions inline -->
+    <svg style="display:none;">
+      <symbol id="icon-compass" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm-1.63-13.37l-1.37 6 6-1.37 1.37-6-6 1.37z"/></symbol>
+      <symbol id="icon-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 3a4 4 0 100 8 4 4 0 000-8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></symbol>
+    </svg>
+
+    <div class="bottom-tab-bar">
+      <a href="index.html" class="tab">
+        <svg><use href="#icon-compass"></use></svg>
+        Discover
+      </a>
+      <a href="matchmaker.html" class="tab active">
+        <svg><use href="#icon-users"></use></svg>
+        Matchmaker
+      </a>
+      <a href="messages.html" class="tab">
+        <svg><use href="#icon-msg"></use></svg>
+        Messages
+      </a>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="users.js"></script>
+  <script>
+    function renderMatchmaker() {
+      if (!window.DEMO_USERS) return;
+      
+      const feed = document.getElementById('mm-feed');
+      feed.innerHTML = '';
+
+      // Generate 3 random pairings
+      for(let i=0; i<3; i++) {
+        const u1 = window.DEMO_USERS[Math.floor(Math.random()*48)];
+        const u2 = window.DEMO_USERS[Math.floor(Math.random()*48)];
+
+        feed.innerHTML += `
+          <div class="mm-card" id="card-${i}">
+            <div class="mm-profiles">
+              <div class="mm-profile">
+                <img src="${u1.profileImage}">
+                <p>${u1.displayName}</p>
+              </div>
+              <div class="mm-heart">❤️</div>
+              <div class="mm-profile">
+                <img src="${u2.profileImage}">
+                <p>${u2.displayName}</p>
+              </div>
+            </div>
+            
+            <div style="background:#1e293b; padding:0.75rem; border-radius:8px; margin-bottom:1rem; font-size:0.8rem;">
+              <div class="stat-row">
+                <span class="stat-label">Shared Extracted Interests:</span>
+                <span class="stat-value text-white">2</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Combined Ghost Risk:</span>
+                <span class="stat-value ghost-medium">${Math.floor((u1.ghostScore + u2.ghostScore)/2)}%</span>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label style="font-size:0.75rem;">Suggest Date Stake (ETH)</label>
+              <input type="text" class="form-control" style="padding:0.5rem;" value="0.05">
+            </div>
+            <div class="form-group" style="margin-bottom:1rem;">
+              <label style="font-size:0.75rem;">Your Matchmaker Fee</label>
+              <input type="text" class="form-control" style="padding:0.5rem;" value="0.005 ETH" disabled>
+            </div>
+
+            <button class="btn-primary" style="padding:0.75rem" onclick="propose(${i})">Propose Match</button>
+          </div>
+        `;
+      }
+    }
+
+    function propose(id) {
+      const btn = document.querySelector(`#card-${id} button`);
+      btn.innerHTML = 'Signing smart contract...';
+      btn.style.opacity = '0.7';
+      
+      setTimeout(() => {
+        btn.innerHTML = 'Proposal Sent! Awaiting Signatures';
+        btn.style.background = '#334155';
+        btn.disabled = true;
+      }, 1000);
+    }
+
+    renderMatchmaker();
+  </script>
+</body>
+</html>

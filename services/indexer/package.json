@@ -1,0 +1,4 @@
+{
+  "_comment": "Indexer package manifest placeholder: later define chain RPC, event decoding, cursor storage, projection writers, and replay tooling dependencies."
+}
+
