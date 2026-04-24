@@ -1,6 +1,6 @@
 import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
 
-const otpStore = new Map<string, { code: string; exp: number }>();
+const otpStore = new Map<string, { code: string; exp: number; attempts: number }>();
 
 export function devEmailAuthEnabled(): boolean {
   return process.env.NODE_ENV === "development" || process.env.ALLOW_DEV_EMAIL_AUTH === "true";
@@ -20,7 +20,7 @@ export function authDevSecret(): string {
 export function issueOtp(email: string): string {
   const key = email.toLowerCase().trim();
   const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
-  otpStore.set(key, { code, exp: Date.now() + 10 * 60 * 1000 });
+  otpStore.set(key, { code, exp: Date.now() + 10 * 60 * 1000, attempts: 0 });
   return code;
 }
 
@@ -31,11 +31,21 @@ export function verifyOtp(email: string, code: string): boolean {
     otpStore.delete(key);
     return false;
   }
+
+  // Increment attempts
+  row.attempts += 1;
+  if (row.attempts > 5) {
+    otpStore.delete(key);
+    return false;
+  }
+
   const a = Buffer.from(row.code, "utf8");
   const b = Buffer.from(code.trim(), "utf8");
+  
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return false;
   }
+
   otpStore.delete(key);
   return true;
 }

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Shield, Wallet, Copy, ExternalLink, Award, Calendar, MapPin, Edit3 } from "lucide-react";
+import { Shield, Wallet, Copy, ExternalLink, Award, Calendar, MapPin, Edit3, Eye } from "lucide-react";
 import { WalletConnectButton } from "@/components/wallet/WalletConnectButton";
 import { ReputationBadge } from "@/components/vouch/ReputationBadge";
 import { VerifiedHumanBadge } from "@/components/identity/VerifiedHumanBadge";
@@ -16,13 +16,20 @@ import { useTrustProfile } from "@/lib/hooks/useTrustProfile";
 import { routes } from "@/lib/routes";
 import { useGhostScore } from "@/lib/ghost-score";
 import { setWalletSignalSharing } from "@/lib/wallet-signal-preference";
+import { ProfilePreview } from "@/components/profile/ProfilePreview";
+import { ProfileEditor } from "@/components/profile/ProfileEditor";
+import { useState } from "react";
+import { useAppState } from "@/components/app/AppStateProvider";
 
 export default function ProfilePage() {
+  const { userProfile } = useAppState();
   const ghostScore = useGhostScore();
   const trust = useTrustProfile();
   const { identity, status } = useWallet();
   const connected = status === "connected" && Boolean(identity.address);
   const walletSignalOn = useWalletSignalSharing();
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const display =
     identity.displayName ||
@@ -31,15 +38,20 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen pb-24 md:pb-8">
       <div className="container mx-auto px-4 max-w-2xl">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass-card p-6">
+         <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="glass-card p-6 cursor-pointer hover:border-primary/20 transition-all active:scale-[0.99]"
+          onClick={() => setIsPreviewOpen(true)}
+        >
           <div className="flex items-start gap-5">
             <div className="relative w-20 h-20 rounded-lg overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&h=120&fit=crop"
+                src={userProfile.image}
                 alt="Profile"
                 width={80}
                 height={80}
-                className="object-cover"
+                className="object-cover h-20 w-20"
               />
               <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full gradient-emerald flex items-center justify-center">
                 <Shield className="w-3 h-3 text-primary-foreground" />
@@ -47,17 +59,38 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-heading text-2xl font-bold text-foreground">Jake W.</h1>
+                <h1 className="font-heading text-2xl font-bold text-foreground">{userProfile.name}</h1>
                 <VerifiedHumanBadge verified={identity.worldIdVerified} />
               </div>
               <p className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
-                <MapPin className="w-3.5 h-3.5" /> New York, NY ·{" "}
-                <Calendar className="w-3.5 h-3.5" /> 28
+                <MapPin className="w-3.5 h-3.5" /> {userProfile.location} ·{" "}
+                <Calendar className="w-3.5 h-3.5" /> {userProfile.age}
               </p>
             </div>
-            <button type="button" className="glass-card p-2 hover:border-primary/30 transition-colors">
-              <Edit3 className="w-4 h-4 text-muted-foreground" />
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                title="View public preview"
+                className="glass-card p-2 hover:border-primary/30 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPreviewOpen(true);
+                }}
+              >
+                <Eye className="w-4 h-4 text-muted-foreground" />
+              </button>
+              <button
+                type="button"
+                title="Edit profile"
+                className="glass-card p-2 hover:border-primary/30 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditorOpen(true);
+                }}
+              >
+                <Edit3 className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </div>
           </div>
 
           <div className="mt-6 space-y-3 rounded-lg border border-border/60 bg-secondary/40 p-4">
@@ -160,6 +193,24 @@ export default function ProfilePage() {
 
         <SparkBalanceHighlight compact className="glass-card mt-6" />
       </div>
+
+      <ProfilePreview
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        profile={{
+          ...userProfile,
+          lastActive: "Active now",
+        }}
+      />
+
+      <ProfileEditor
+        isOpen={isEditorOpen}
+        onClose={() => setIsEditorOpen(false)}
+        initialData={{
+          bio: userProfile.bio,
+          photos: [userProfile.image],
+        }}
+      />
     </div>
   );
 }

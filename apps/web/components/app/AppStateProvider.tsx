@@ -15,6 +15,15 @@ type AppState = {
   messagesByThread: Record<string, { id: string; author: string; body: string }[]>;
   datePlan: DatePlan;
   spark: number;
+  userProfile: {
+    name: string;
+    age: number;
+    bio: string;
+    location: string;
+    image: string;
+    trustScore: number;
+    interests: string[];
+  };
 };
 
 type AppStateContextValue = AppState & {
@@ -23,6 +32,7 @@ type AppStateContextValue = AppState & {
   sendMessage: (threadId: string, body: string) => void;
   updateDatePlan: (plan: Pick<DatePlan, "amountEth" | "place">) => void;
   setDateStatus: (status: DatePlan["status"]) => void;
+  updateUserProfile: (profile: Partial<AppState["userProfile"]>) => void;
 };
 
 const defaultState: AppState = {
@@ -46,6 +56,15 @@ const defaultState: AppState = {
     status: "draft",
   },
   spark: 1240,
+  userProfile: {
+    name: "Jake W.",
+    age: 28,
+    bio: "Just a guy looking for a meaningful connection in the web3 world. Coffee, hiking, and exploring new chains.",
+    location: "New York, NY",
+    image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&h=120&fit=crop",
+    trustScore: 92,
+    interests: ["Coffee", "Hiking", "Web3", "Tech", "Art"],
+  },
 };
 
 const storageKey = "bonded.app-state.v1";
@@ -107,6 +126,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           ...current,
           datePlan: { ...current.datePlan, status },
           spark: status === "completed" ? current.spark + 100 : current.spark,
+        })),
+      updateUserProfile: (profile) =>
+        setState((current) => ({
+          ...current,
+          userProfile: { ...current.userProfile, ...profile },
         })),
     }),
     [state],

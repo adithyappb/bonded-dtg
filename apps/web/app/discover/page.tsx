@@ -24,6 +24,7 @@ import { MATCH_USER_PREFERENCES } from "@/lib/matching-data";
 import { routes } from "@/lib/routes";
 import { useSwipeLimit } from "@/lib/swipe-limit";
 import { useWalletOptional } from "@/lib/wallet";
+import { ProfilePreview } from "@/components/profile/ProfilePreview";
 
 export default function DiscoverPage() {
   const router = useRouter();
@@ -34,6 +35,7 @@ export default function DiscoverPage() {
   const [hydrated, setHydrated] = useState(false);
   const wallet = useWalletOptional();
   const walletAddress = wallet?.identity.address ?? null;
+  const [detailProfile, setDetailProfile] = useState<any>(null);
 
   useEffect(() => {
     setHydrated(true);
@@ -228,6 +230,7 @@ export default function DiscoverPage() {
                     flags={currentMatch.flags}
                     imagePriority={swipesUsed === 0}
                     onSwipe={handleSwipeComplete}
+                    onTap={() => setDetailProfile(currentMatch.profile)}
                   />
                 ) : (
                   <motion.div
@@ -355,6 +358,23 @@ export default function DiscoverPage() {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      <ProfilePreview
+        isOpen={Boolean(detailProfile)}
+        onClose={() => setDetailProfile(null)}
+        profile={detailProfile ?? {
+          name: "",
+          age: 0,
+          bio: "",
+          location: "",
+          trustScore: 0,
+          image: "",
+          intent: "",
+          stakePreference: "",
+          lastActive: "",
+          interests: [],
+        }}
+      />
     </div>
   );
 }

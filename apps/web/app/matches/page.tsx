@@ -4,9 +4,12 @@ import Link from "next/link";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { routes } from "@/lib/routes";
 import { MATCHED_PROFILES } from "@/lib/matching";
+import { ProfilePreview } from "@/components/profile/ProfilePreview";
+import { useState } from "react";
 
 export default function MatchesPage() {
   const topMatches = MATCHED_PROFILES.slice(0, 3);
+  const [detailProfile, setDetailProfile] = useState<any>(null);
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -25,7 +28,11 @@ export default function MatchesPage() {
 
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {topMatches.map((match) => (
-          <article key={match.profile.id} className="glass-card p-5">
+          <article
+            key={match.profile.id}
+            className="glass-card p-5 cursor-pointer hover:border-primary/20 transition-all active:scale-[0.99]"
+            onClick={() => setDetailProfile(match.profile)}
+          >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="font-heading text-xl font-semibold text-foreground">
@@ -78,6 +85,23 @@ export default function MatchesPage() {
           </article>
         ))}
       </div>
+
+      <ProfilePreview
+        isOpen={Boolean(detailProfile)}
+        onClose={() => setDetailProfile(null)}
+        profile={detailProfile ?? {
+          name: "",
+          age: 0,
+          bio: "",
+          location: "",
+          trustScore: 0,
+          image: "",
+          intent: "",
+          stakePreference: "",
+          lastActive: "",
+          interests: [],
+        }}
+      />
     </div>
   );
 }

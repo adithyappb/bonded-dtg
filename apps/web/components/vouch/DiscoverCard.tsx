@@ -28,6 +28,7 @@ export interface DiscoverCardProps {
   flags: readonly string[];
   imagePriority?: boolean;
   onSwipe: (direction: "left" | "right", meta?: SwipeMeta) => void;
+  onTap?: () => void;
 }
 
 export type DiscoverCardHandle = {
@@ -57,6 +58,7 @@ export const DiscoverCard = forwardRef<DiscoverCardHandle, DiscoverCardProps>(
       flags,
       imagePriority = false,
       onSwipe,
+      onTap,
     },
     ref,
   ) {
@@ -136,6 +138,7 @@ export const DiscoverCard = forwardRef<DiscoverCardHandle, DiscoverCardProps>(
         dragElastic={0.68}
         dragMomentum={false}
         onDragEnd={handleDragEnd}
+        onTap={onTap}
         className="absolute inset-x-0 top-0 z-10 mx-auto w-full max-w-sm cursor-grab touch-pan-y active:cursor-grabbing"
       >
         <div className="glass-card overflow-hidden rounded-2xl glow-emerald">
