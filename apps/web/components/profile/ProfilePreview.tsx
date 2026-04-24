@@ -2,9 +2,7 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, MapPin, Shield, Sparkles, Star, Calendar, MessageCircle, Heart, Info } from "lucide-react";
-import { ReputationBadge } from "@/components/vouch/ReputationBadge";
-import { trustTierLabel } from "@/lib/trust";
+import { X, MapPin, Shield, Sparkles, Info } from "lucide-react";
 
 export interface ProfilePreviewProps {
   isOpen: boolean;

@@ -4,12 +4,12 @@ import Link from "next/link";
 import { MessageCircle, Sparkles } from "lucide-react";
 import { routes } from "@/lib/routes";
 import { MATCHED_PROFILES } from "@/lib/matching";
-import { ProfilePreview } from "@/components/profile/ProfilePreview";
+import { ProfilePreview, type ProfilePreviewProps } from "@/components/profile/ProfilePreview";
 import { useState } from "react";
 
 export default function MatchesPage() {
   const topMatches = MATCHED_PROFILES.slice(0, 3);
-  const [detailProfile, setDetailProfile] = useState<any>(null);
+  const [detailProfile, setDetailProfile] = useState<ProfilePreviewProps["profile"] | null>(null);
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -70,7 +70,7 @@ export default function MatchesPage() {
             <div className="mt-5 flex gap-3">
               <Link
                 href={routes.messages}
-                className="gradient-emerald inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+                className="gradient-emerald inline-flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-primary-foreground"
               >
                 <MessageCircle className="h-4 w-4" />
                 Message

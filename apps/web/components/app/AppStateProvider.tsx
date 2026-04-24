@@ -23,6 +23,8 @@ type AppState = {
     image: string;
     trustScore: number;
     interests: string[];
+    intent: string;
+    stakePreference: string;
   };
 };
 
@@ -64,6 +66,8 @@ const defaultState: AppState = {
     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&h=120&fit=crop",
     trustScore: 92,
     interests: ["Coffee", "Hiking", "Web3", "Tech", "Art"],
+    intent: "Long-term relationships",
+    stakePreference: "0.005 ETH",
   },
 };
 

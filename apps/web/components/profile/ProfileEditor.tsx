@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Camera, Image as ImageIcon, Check } from "lucide-react";
+import { X, Camera, Check } from "lucide-react";
 import { useState, useRef } from "react";
 import { useAppState } from "@/components/app/AppStateProvider";
 

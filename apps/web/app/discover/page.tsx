@@ -24,7 +24,7 @@ import { MATCH_USER_PREFERENCES } from "@/lib/matching-data";
 import { routes } from "@/lib/routes";
 import { useSwipeLimit } from "@/lib/swipe-limit";
 import { useWalletOptional } from "@/lib/wallet";
-import { ProfilePreview } from "@/components/profile/ProfilePreview";
+import { ProfilePreview, type ProfilePreviewProps } from "@/components/profile/ProfilePreview";
 
 export default function DiscoverPage() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function DiscoverPage() {
   const [hydrated, setHydrated] = useState(false);
   const wallet = useWalletOptional();
   const walletAddress = wallet?.identity.address ?? null;
-  const [detailProfile, setDetailProfile] = useState<any>(null);
+  const [detailProfile, setDetailProfile] = useState<ProfilePreviewProps["profile"] | null>(null);
 
   useEffect(() => {
     setHydrated(true);
